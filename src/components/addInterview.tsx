@@ -172,8 +172,9 @@ export default function AddInterview() {
                 <div className="" key={data.question}>
                     <div className="" key={data.question}>{idx}  ---{data.question}</div>
                     <div className="" key={data.question}>{data.answer}</div>
-<br />
-<br />
+                    <br />
+                    <br />
+                    haha
                 </div>
             ))}
 
