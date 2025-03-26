@@ -20,6 +20,12 @@ import * as z from "zod";
 import { Form } from "@/components/ui/form";
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { QuestionForm } from "@/types/job";
+import { db } from "@/utils/db";
+import { mockInterview } from "@/utils/schema";
+import { v4 as uuidv4 } from 'uuid';
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { Loader } from "lucide-react";
 
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API as string);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -42,18 +48,20 @@ export default function AddInterview() {
         loading: false,
         data: ""
     })
+    const router = useRouter()
     const [open, setOpen] = useState(false);
 
+    const controls = useForm({
+        resolver: zodResolver(formSchema),
+    });
 
     // ✅ Setup form
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm({
-        resolver: zodResolver(formSchema),
-    });
-
+    } = controls
+    const { user } = useUser()
 
 
     const submitForm = async (data: QuestionForm) => {
@@ -64,8 +72,7 @@ export default function AddInterview() {
         Consider a job description of: "${data.jobDescription}" and ${data.experience} years of experience.`;
 
         try {
-            setAiResponse({ loading: true, data: null });
-            setOpen(false);
+            setAiResponse((prev) => ({ ...prev, loading: true }));
             const result = await model.generateContent({
                 contents: [
                     {
@@ -81,11 +88,27 @@ export default function AddInterview() {
             setAiResponse({
                 loading: false, data: cleanedResponse
             });
+            const insertDb = await db.insert(mockInterview).values({
+                jsonMockResp: cleanedResponse as string,
+                jobPosition: data.jobTitle,
+                jobDesc: data.jobDescription,
+                jobExperience: data.experience,
+                createdBy: user?.primaryEmailAddress?.emailAddress,
+                createdAt: new Date(),
+                mockId: uuidv4(),
+            }).returning({ mockId: mockInterview.id });
+
+            if (insertDb) {
+                router.push(`/dashboard/interview/${insertDb[0].mockId}`)
+            }
         } catch (error) {
             console.error("Error fetching AI response:", error);
             setAiResponse({ loading: false, data: "Failed to generate questions." });
         }
-        console.log("data", aiResponse.data)
+        finally {
+            setOpen(false);
+            setAiResponse((prev) => ({ ...prev, loading: false }))
+        }
     };
 
 
@@ -93,7 +116,7 @@ export default function AddInterview() {
     return (
         <div>
 
-            <Form>
+            <Form {...controls}>
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
                         <Button variant="outline" className="h-42 w-68 cursor-pointer">
@@ -159,26 +182,12 @@ export default function AddInterview() {
 
                             {/* Submit Button */}
                             <DialogFooter>
-                                <Button type="submit" className="cursor-pointer">Save Changes</Button>
+                                <Button disabled={aiResponse.loading} type="submit" className="cursor-pointer min-w-[150px] text-center">{aiResponse.loading ? (<div className="flex gap-3 items-center"><Loader className="animate-spin" />Generating </div>) : ("Create Interview")}</Button>
                             </DialogFooter>
                         </form>
                     </DialogContent>
                 </Dialog>
             </Form>
-
-            {/* AI Response Section */}
-            {aiResponse.loading && <p className="text-blue-500">Generating questions...</p>}
-            {aiResponse.data && JSON.parse(aiResponse.data).map((data, idx) => (
-                <div className="" key={data.question}>
-                    <div className="" key={data.question}>{idx}  ---{data.question}</div>
-                    <div className="" key={data.question}>{data.answer}</div>
-                    <br />
-                    <br />
-                    haha
-                </div>
-            ))}
-
-
-        </div>
+        </div >
     );
 }
