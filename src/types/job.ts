@@ -1,5 +1,5 @@
 export interface QuestionForm {
     jobTitle: string,
     jobDescription: string,
-    experience: string
+    experience: number | null
 }
