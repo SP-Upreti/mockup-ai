@@ -61,9 +61,31 @@ export default function AddInterview() {
 
 
     const submitForm = async (data: QuestionForm) => {
-        const prompt = `Create 10 job interview questions and answers in JSON format [{question, answer}]
-         for the ${data.jobTitle} position. Consider a job description of: "${data.jobDescription}" and ${data.experience} years of experience.
-         donot use "" quote inside "" in your response to help in converting json`;
+        const prompt = `
+        Generate **exactly 10** job interview questions and answers in **valid JSON format**.
+        Each item should be an object with **"question"** and **"answer"** keys.
+        
+        **Job Position:** ${data.jobTitle}
+        **Experience Required:** ${data.experience} years
+        **Job Description:** "${data.jobDescription}"
+        
+        ⚠️ **Important Rules:**
+        - Format output as a **valid JSON array**: \`[{ "question": "...", "answer": "..." }, ...]\`
+        - Do **NOT** include markdown or escape characters.
+        - Avoid ambiguous or duplicate questions.
+        - Keep answers **concise** (max 2-3 sentences).
+        - Questions should be **relevant** to the given role & experience level.
+        
+        ✅ **Example JSON Output:**
+        \`\`\`json
+        [
+          { "question": "What inspired you to pursue this role?", "answer": "I have a strong passion for..." },
+          { "question": "Describe a challenging project you've worked on.", "answer": "I once handled a project where..." }
+        ]
+        \`\`\`
+        
+        Now, generate the JSON response.
+        `;
 
         try {
             setAiResponse(true);

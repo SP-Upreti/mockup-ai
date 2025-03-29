@@ -4,7 +4,7 @@ import React from 'react'
 export default function page() {
     return (
         < section className="bg-white" >
-            <div className="lg:grid lg:min-h-screen lg:grid-cols-12">
+            <div className="lg:grid lg:min-h-screen lg:grid-cols-12 ">
                 <section className="relative flex h-32 items-end bg-gray-900 lg:col-span-5 lg:h-full xl:col-span-6">
                     {/* <Image
                         fill
@@ -73,7 +73,9 @@ export default function page() {
                             </p>
                         </div>
 
-                        <SignIn />
+                        <div className="my-10 md:my-10">
+                            <SignIn />
+                        </div>
                     </div>
                 </main>
             </div>
