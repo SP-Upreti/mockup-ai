@@ -61,7 +61,9 @@ export default function AddInterview() {
 
 
     const submitForm = async (data: QuestionForm) => {
-        const prompt = `Create 10 job interview questions and answers in JSON format [{question, answer}] for the ${data.jobTitle} position. Consider a job description of: "${data.jobDescription}" and ${data.experience} years of experience.`;
+        const prompt = `Create 10 job interview questions and answers in JSON format [{question, answer}]
+         for the ${data.jobTitle} position. Consider a job description of: "${data.jobDescription}" and ${data.experience} years of experience.
+         donot use "" quote inside "" in your response to help in converting json`;
 
         try {
             setAiResponse(true);
@@ -73,7 +75,7 @@ export default function AddInterview() {
             });
 
             const responseText = result.response.text();
-            const cleanedResponse = responseText.replace(/```json|```/g, ""); // ✅ Use replace safely
+            const cleanedResponse = responseText.replace(/```json|```/g, "");
             const insertDb = await db.insert(mockInterview).values({
                 json_mock_resp: cleanedResponse ?? "",
                 jobPosition: data.jobTitle ?? "",

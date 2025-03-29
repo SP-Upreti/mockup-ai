@@ -13,7 +13,7 @@ const WebcamComponent = () => {
     };
 
     return (
-        <div className="flex relative flex-col items-center gap-4">
+        <div className="flex h-full w-full relative flex-col items-center gap-4">
             {image ? (
                 <img src={image} alt="Captured" className="rounded-lg shadow-lg" />
             ) : (
@@ -23,7 +23,7 @@ const WebcamComponent = () => {
                     mirrored={true}
                     onUserMediaError={(err: unknown) => { alert(err || "k vo") }}
                     screenshotFormat="image/png"
-                    className="rounded-lg  h-64 shadow-lg w-96"
+                    className="rounded-lg  h-full shadow-lg w-96"
                 />
             )}
             <div className="flex gap-4 absolute bottom-2 left-2">
