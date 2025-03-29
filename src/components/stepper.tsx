@@ -32,9 +32,9 @@ const QuestionStepper = ({ interviewQuestions }: { interviewQuestions: string })
         <div className='border p-4 bg-indigo-50 rounded-md'>
             {/* {interviewData.length} */}
             <div className="flex gap-2 mb-4 items-center flex-wrap">
-                {interviewData.map((question, idx: number) => {
+                {interviewData.map((question: string, idx: number) => {
                     return (
-                        <Button onClick={() => setCurrentStep(idx)} className={`cursor-pointer border active:bg-indigo-800 focus:bg-indigo-800 ${currentStep === idx ? "bg-indigo-800" : "bg-transparent text-indigo-800 border hover:bg-indigo-800 hover:text-white border-indigo-500"} px-3.5 rounded-full`} key={idx}>#question {idx + 1}</Button>
+                        <Button onClick={() => setCurrentStep(idx)} className={`cursor-pointer border active:bg-indigo-800 focus:bg-indigo-800 ${currentStep === idx ? "bg-indigo-800" : "bg-transparent text-indigo-800 border hover:bg-indigo-800 hover:text-white border-indigo-500"} px-3.5 rounded-full`} key={idx + question}>#question {idx + 1}</Button>
                     )
                 })}
             </div>
